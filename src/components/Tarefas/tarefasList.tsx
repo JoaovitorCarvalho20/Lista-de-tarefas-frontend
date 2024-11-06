@@ -14,9 +14,12 @@ const TarefasList: React.FC = () => {
   const [tarefaEditando, setTarefaEditando] = useState<TarefasDTO | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // Atualizar a URL do fetch para a URL pública do ngrok
+  const BASE_URL = "https://d5c2-177-74-238-140.ngrok-free.app"; // Substitua pela sua URL ngrok
+
   const fetchTarefas = async () => {
     try {
-      const response = await fetch("http://localhost:8080/tarefas");
+      const response = await fetch(`${BASE_URL}/tarefas`);
       const data = await response.json();
       setTarefas(data);
     } catch (error) {
@@ -34,7 +37,7 @@ const TarefasList: React.FC = () => {
     );
     if (confirmDelete) {
       try {
-        await fetch(`http://localhost:8080/tarefas/${id}`, {
+        await fetch(`${BASE_URL}/tarefas/${id}`, {
           method: "DELETE",
         });
         setTarefas(tarefas.filter((tarefa) => tarefa.id !== id));
@@ -46,7 +49,7 @@ const TarefasList: React.FC = () => {
 
   const handleAdd = async () => {
     try {
-      const response = await fetch("http://localhost:8080/tarefas", {
+      const response = await fetch(`${BASE_URL}/tarefas`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -77,7 +80,7 @@ const TarefasList: React.FC = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:8080/tarefas/${tarefaEditando.id}`,
+        `${BASE_URL}/tarefas/${tarefaEditando.id}`,
         {
           method: "PUT",
           headers: {
@@ -121,30 +124,36 @@ const TarefasList: React.FC = () => {
 
   // Função para mover a tarefa para cima
   const handleMoveUp = async (id: number) => {
-    const index = tarefas.findIndex(tarefa => tarefa.id === id);
+    const index = tarefas.findIndex((tarefa) => tarefa.id === id);
     if (index > 0) {
       const newOrder = [...tarefas];
-      [newOrder[index - 1], newOrder[index]] = [newOrder[index], newOrder[index - 1]];
+      [newOrder[index - 1], newOrder[index]] = [
+        newOrder[index],
+        newOrder[index - 1],
+      ];
       setTarefas(newOrder);
-      await updateOrder(newOrder.map(t => t.id));
+      await updateOrder(newOrder.map((t) => t.id));
     }
   };
 
   // Função para mover a tarefa para baixo
   const handleMoveDown = async (id: number) => {
-    const index = tarefas.findIndex(tarefa => tarefa.id === id);
+    const index = tarefas.findIndex((tarefa) => tarefa.id === id);
     if (index < tarefas.length - 1) {
       const newOrder = [...tarefas];
-      [newOrder[index + 1], newOrder[index]] = [newOrder[index], newOrder[index + 1]];
+      [newOrder[index + 1], newOrder[index]] = [
+        newOrder[index],
+        newOrder[index + 1],
+      ];
       setTarefas(newOrder);
-      await updateOrder(newOrder.map(t => t.id));
+      await updateOrder(newOrder.map((t) => t.id));
     }
   };
 
   // Função para atualizar a ordem das tarefas no backend
   const updateOrder = async (ids: number[]) => {
     try {
-      await fetch("http://localhost:8080/tarefas/ordem", {
+      await fetch(`${BASE_URL}/tarefas/ordem`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -263,7 +272,7 @@ const TarefasList: React.FC = () => {
                 onClick={handleEdit}
                 className="bg-blue-500 text-white px-4 py-2 rounded"
               >
-                Salvar
+                Salvar Alterações
               </button>
             </div>
           </div>
